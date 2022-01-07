@@ -23,8 +23,8 @@ jobs:
         
     - uses: actions/cache@v2
       with:
-        path: ~/.cache/pip
-        key: ${{ hashFiles('requirements.txt') }}
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('dev-requirements.txt') }}
 
         
     - name: Install dependencies
