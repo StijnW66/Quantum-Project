@@ -40,4 +40,4 @@ def test_double_hadamard():
 
     probabilities, counts = execute_circuit(circuit)
     for state, val in probabilities.items():
-        assert math.isclose(val, 0.25, abs_tol=0.05)
+        assert math.isclose(val, 0.25, abs_tol=0.0005)
