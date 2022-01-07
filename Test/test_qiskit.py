@@ -5,6 +5,7 @@ import pytest
 import math
 from src.src_quantum.qi_runner import setup_QI, execute_circuit
 
+from quantuminspire.credentials import enable_account
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
 
 
