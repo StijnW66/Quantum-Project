@@ -10,6 +10,7 @@ from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
 
 @pytest.fixture(scope='module', autouse=True)
 def setup_QI_before_tests():
+    enable_account("2a9f882ef038dcca14b930a393e332eae78ce915")
     setup_QI("Tests")
 
 def test_entagle():
