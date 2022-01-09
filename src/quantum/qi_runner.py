@@ -25,7 +25,7 @@ def execute_circuit(circuit, shots=256):
     return qi_result
 
 # Method that is able to print the results retrived from the execute_circuit method.
-def print_results(qi_result):
+def print_results(qi_result, circuit):
     counts_histogram = qi_result.get_counts(circuit)
     print('\nState\tCounts')
     [print('{0}\t\t{1}'.format(state, counts)) for state, counts in counts_histogram.items()]
