@@ -6,7 +6,7 @@ sys.path.append(".")
 import pytest
 import math
 from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
-from src.quantum.quantum_gates import adder, adder_optimized, parse_num
+from src.quantum.quantum_gates import adder, adder_optimized, adder_reduced, parse_num
 
 from quantuminspire.credentials import enable_account
 from qiskit.circuit.library import QFT
@@ -18,24 +18,55 @@ def setup_QI_before_tests():
     enable_account("2a9f882ef038dcca14b930a393e332eae78ce915")
     setup_QI("Tests")
 
-# Simple test that uses quantuminspire to entangle two qubits.
-def test_entagle():
-    q = QuantumRegister(2)
-    b = ClassicalRegister(2)
+
+def assert_add_nums_reduced(num1, num2):
+    # Calculate the sum to determine the amount of bits needed.
+    sum = num1+num2
+    size = len((bin(sum))) - 2 # subtract 2 since string starts with 0b
+    print(size)
+
+    # Create the circuit
+    q = QuantumRegister(size)
+    b = ClassicalRegister(size)
     circuit = QuantumCircuit(q, b)
 
-    circuit.h(q[0])
-    circuit.cx(q[0], q[1])
-    circuit.measure(q, b)
+    list_num = parse_num(num2, size)[::-1]
 
-    probabilities = execute_circuit(circuit).get_probabilities(circuit)
+    for i in range(len(list_num)):
+        if (list_num[i]):
+            circuit.x(q[i])
 
-    for state, val in probabilities.items():
-        assert math.isclose(val, 0.5, abs_tol=0.1)
+    circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=False, insert_barriers=False, name='qft'), q)
+
+    adder_reduced(circuit, num1)
+
+    circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='qft'), q)
+
+    print(circuit.draw())
+
+    # Execute circuit on quantuminspire and check if the correct  value is obtained.
+    qi_result = execute_circuit(circuit, 5)
+    counts_histogram = qi_result.get_counts(circuit)
+    bin_result = counts_histogram.most_frequent()[0:size]
+    result = int(bin_result, 2)
+    assert result == num1 + num2
 
 
+def test_reduced():
+    assert_add_nums_reduced(11, 14)
+    assert_add_nums_reduced(110, 143)
+    assert_add_nums_reduced(99, 19)
+    assert_add_nums_reduced(194, 171)
+    assert_add_nums_reduced(1, 124)
+    assert_add_nums_reduced(0, 162)
+    assert_add_nums_reduced(82, 0)
+    assert_add_nums_reduced(5254, 2083)
+
+    # this takes 20 minutes...
+    #assert_add_nums_reduced(60108863, 108863)
 
 
+# Below are tests for up to 13 qubits added together
 
 def create_adder_circuit(num1, num2, size, optimize):
     # create quantum circuit to hold value a.
@@ -105,4 +136,3 @@ def test_adder():
     # This test takes 8 minutes to run and 91 gates for normal adder,
     # The optimized adder takes 6 minutes and 33 gates
     # assert_add_nums(5254, 2083)
-
