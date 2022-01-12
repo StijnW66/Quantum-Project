@@ -6,7 +6,7 @@ sys.path.append(".")
 import pytest
 import math
 from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
-from src.quantum.quantum_gates import adder, adder_optimized, adder_reduced, parse_num
+from src.quantum.gates.adder_gate import adder, adder_optimized, adder_reduced, parse_num
 
 from quantuminspire.credentials import enable_account
 from qiskit.circuit.library import QFT
@@ -38,9 +38,10 @@ def assert_add_nums_reduced(num1, num2):
 
     circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=False, insert_barriers=False, name='qft'), q)
 
-    adder_reduced(circuit, num1)
+    adder = adder_reduced(num1, size)
+    circuit.append(adder, q)
 
-    circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='qft'), q)
+    circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='iqft'), q)
 
     print(circuit.draw())
 

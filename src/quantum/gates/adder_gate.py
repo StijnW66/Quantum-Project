@@ -1,14 +1,10 @@
-import sys
-sys.path.append(".")
-from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
-
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
 import math
 
 # This is the most efficient adder which can add up to 26 bit numbers.
-def adder_reduced(circuit, num):
-    qubit_register = circuit.qubits
-    size = len(qubit_register)
+def adder_reduced(num, size):
+    qubit_register = QuantumRegister(size)
+    circuit = QuantumCircuit(qubit_register)
 
     list_num = parse_num(num, size)
     print(list_num)
@@ -19,6 +15,9 @@ def adder_reduced(circuit, num):
             if (list_num[j + i]):
                 angle_sum = (angle_sum + (2*3.14)/2**(j+1))
         circuit.p(angle_sum, qubit_register[i])
+
+    return circuit
+
 
 def adder(circuit):
     qubit_register = circuit.qubits
