@@ -14,7 +14,7 @@ def controlled_multiplier_gate(x_size, b_size, a, N):
 
     cr = QuantumCircuit(c1, x, b, c2)
 
-    # Create QFT gate and add to 'b' qubits
+    # Create QFT gate and apply to 'b' qubits
     qft_b = QFT(b_size)
     cr.append(qft_b.to_instruction(), b)
 
@@ -24,15 +24,11 @@ def controlled_multiplier_gate(x_size, b_size, a, N):
         temp_modular_adder = modular_adder(temp_a, N, b_size)
         cr.append(temp_modular_adder, [c1[0], x[i]] + b[0:b_size] + [c2[0]])
 
-    # Create QFT^(-1) gate and add to 'b' qubits
+    # Create QFT^(-1) gate and apply to 'b' qubits
     inv_qft_b = QFT(b_size).inverse()
 
     cr.append(inv_qft_b.to_instruction(), b)
 
-    print(cr.draw())  # TO DELETE: left for Debugging purposes
-
-
-controlled_multiplier_gate(2, 3, 2, 3)  # TO DELETE: left for Debugging purposes
 
 
 def swap_reg(size):
