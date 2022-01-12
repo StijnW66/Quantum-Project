@@ -5,8 +5,8 @@ from src.quantum.gates.modular_adder_gate import modular_adder
 
 
 def controlled_multiplier_gate(x_size, b_size, a, N):
-    # Although one additional controlled gate 'c1' is specified for controlled
-    # multiplier gate, the 'c2' gate is to match controls of modular adder
+    # Although one additional controlling qubit 'c1' is specified for controlled
+    # multiplier gate, the 'c2' qubit is to match qubit control of modular adder
     c1 = QuantumRegister(1, 'c')
     x = QuantumRegister(x_size, 'x')
     b = QuantumRegister(b_size, 'b')
