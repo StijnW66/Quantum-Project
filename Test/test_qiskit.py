@@ -195,7 +195,6 @@ def assert_controlled_swap(initial_state):
 
     qi_result = execute_circuit(circuit, 3)
     counts_histogram = qi_result.get_counts(circuit)
-    print(counts_histogram.most_frequent())
     bin_result = [int(i) for i in str(counts_histogram.most_frequent())]
     print(bin_result)
     if initial_state[0]:
