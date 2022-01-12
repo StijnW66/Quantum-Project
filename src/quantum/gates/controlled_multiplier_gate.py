@@ -13,3 +13,24 @@ def controlled_multiplier_gate(x_size, b_size):
 
 
 controlled_multiplier_gate(2, 2)
+
+
+def swap_reg(size):
+    x = QuantumRegister(size, 'x')
+    b = QuantumRegister(size, 'b')
+    circuit = QuantumCircuit(x, b)
+    circuit.swap(x, b)
+    return circuit
+
+def c_swap_register(size):
+    c = QuantumRegister(1, 'c')
+    x = QuantumRegister(size, 'x')
+    b = QuantumRegister(size, 'b')
+
+    circuit = QuantumCircuit(c, x, b)
+
+    c_swap_gate = swap_reg(size).to_gate(label="SWAP").control(1)
+    circuit.append(c_swap_gate, range(2*size+1))
+
+    return circuit
+
