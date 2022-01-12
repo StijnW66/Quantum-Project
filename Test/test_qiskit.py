@@ -7,6 +7,7 @@ import pytest
 import math
 from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
 from src.quantum.gates.adder_gate import adder, adder_optimized, adder_reduced, parse_num
+from src.quantum.gates.modular_adder_gate import modular_adder
 
 from quantuminspire.credentials import enable_account
 from qiskit.circuit.library import QFT
@@ -137,3 +138,41 @@ def test_adder():
     # This test takes 8 minutes to run and 91 gates for normal adder,
     # The optimized adder takes 6 minutes and 33 gates
     # assert_add_nums(5254, 2083)
+
+def assert_modular_adder(num1, num2, N):
+    size = len((bin(N))) - 1
+    q = QuantumRegister(size+3)
+    c = ClassicalRegister(size+3)
+    circuit = QuantumCircuit(q, c)
+
+    circuit.x(q[0])
+    circuit.x(q[1])
+
+    # Set number B
+    list_num = parse_num(num2, size)[::-1]
+    for i in range(len(list_num)):
+        if (list_num[i]):
+            circuit.x(q[i + 2])
+
+    circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=False, insert_barriers=False, name='qft'), range(2, size + 2))
+    mod_adder = modular_adder(num1, N, size)
+    circuit.append(mod_adder, range(0, size+3))
+    circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='iqft'), range(2, size + 2))
+
+    print(circuit.draw())
+
+    qi_result = execute_circuit(circuit, 1)
+    counts_histogram = qi_result.get_counts(circuit)
+    bin_result = counts_histogram.most_frequent()[0 : size + 1]
+    print(bin_result)
+    result = int(bin_result, 2)
+    expected = (num1+num2) if (num1 + num2) < N else (num1 + num2 - N)
+    assert result == expected
+
+def test_modular_adder():
+    assert_modular_adder(19, 6, 15)
+    assert_modular_adder(10, 10, 17)
+    assert_modular_adder(1023, 782, 1000)
+    # assert_modular_adder(808763, 1312, 604921)
+
+
