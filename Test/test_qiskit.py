@@ -222,3 +222,47 @@ def test_controlled_swap():
     assert_controlled_swap([1, 0, 0, 1, 1, 1, 1, 0, 0])
     assert_controlled_swap([1, 0, 1, 1, 1, 1, 1, 0, 0])
     assert_controlled_swap([1, 1, 1, 0, 0])
+
+
+def assert_controlled_multiplier(c1, b, x, a, N):
+    size_x = len(bin(x).lstrip("0b"))
+    size_b = len(bin(N).lstrip("0b"))
+
+    c_q = QuantumRegister(1, 'c')
+    x_q = QuantumRegister(size_x, 'x')
+    b_q = QuantumRegister(size_b, 'b')
+    c_mod_add = QuantumRegister(1, 'c_mod_add')
+    c_r = ClassicalRegister(2 + size_x + size_b, 'c_r')
+    circuit = QuantumCircuit(c_q, x_q, b_q, c_mod_add, c_r)
+
+    if c1:
+        circuit.x(c_q[0])
+
+    bin_x = parse_num(x, size_x)[::-1]
+    for i in range(len(bin_x)):
+        if bin_x[i]:
+            circuit.x(x_q[i])
+
+    bin_b = parse_num(b, size_b)[::-1]
+    for i in range(len(bin_b)):
+        if bin_b[i]:
+            circuit.x(b_q[i])
+
+    c_mult_gate = controlled_multiplier_gate(size_x, size_b, a, N)
+
+    circuit.append(c_mult_gate.to_instruction(), [c_q[0]] + x_q[0:size_x] + b_q[0:size_b] + [c_mod_add[0]])
+
+    qi_result = execute_circuit(circuit, 1)
+
+    counts_histogram = qi_result.get_counts(circuit)
+    bin_result = counts_histogram.most_frequent()[1: size_b + 1]
+    print(bin_result)
+    result = int(bin_result, 2)
+
+    expected = (b + a * x) % N if c1 else b
+    assert result == expected
+
+
+def test_controlled_multiplier():
+    assert_controlled_multiplier(True, 4, 2, 3, 10)
+    assert_controlled_multiplier(False, 4, 2, 3, 10)
