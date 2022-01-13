@@ -29,6 +29,8 @@ def controlled_multiplier_gate(x_size, b_size, a, N):
 
     cr.append(inv_qft_b.to_instruction(), b)
 
+    return cr
+
 
 
 def swap_reg(size):
