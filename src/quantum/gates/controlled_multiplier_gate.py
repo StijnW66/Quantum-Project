@@ -74,8 +74,23 @@ def c_U_a_gate(size, a, N):
     circuit.append(c_swap_gate, range(2*size+1))
 
     # adding inverse controlled multiplier gate
-    # how is a^-1 possible in the adder gate????
-    c_mult_a_inverse_gate = controlled_multiplier_gate(size, size, 1/a, N).inverse().to_gate()
+    c_mult_a_inverse_gate = controlled_multiplier_gate(size, size, modinv(a,N), N).inverse().to_gate()
     circuit.append(c_mult_a_inverse_gate, range(2*size+1))
 
     return circuit
+
+
+# modular inverse code from https://stackoverflow.com/questions/4798654/modular-multiplicative-inverse-function-in-python
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+def modinv(a, m):
+    g, x, y = egcd(a, m)
+    if g != 1:
+        raise Exception('modular inverse does not exist')
+    else:
+        return x % m
