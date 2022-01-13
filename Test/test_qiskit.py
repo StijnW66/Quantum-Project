@@ -178,6 +178,8 @@ def test_modular_adder():
 
 
 def assert_controlled_swap(initial_state):
+    # l must equal 2*size+1
+    # 2 registers length size that will be swapped and 1 control qubit
     l = len(initial_state)
     assert l > 2 and l % 2 == 1
     size = (l-1)//2
@@ -186,6 +188,8 @@ def assert_controlled_swap(initial_state):
     b = QuantumRegister(size)
     cl = ClassicalRegister(l)
     circuit = QuantumCircuit(c,x,b,cl)
+
+    # preparing initialization of qubits
     for q in range(l):
         if initial_state[q]:
             circuit.x(q)
@@ -193,17 +197,20 @@ def assert_controlled_swap(initial_state):
 
     print(circuit.draw())
 
-    qi_result = execute_circuit(circuit, 3)
+    qi_result = execute_circuit(circuit, 1)
     counts_histogram = qi_result.get_counts(circuit)
     bin_result = [int(i) for i in str(counts_histogram.most_frequent())]
     print(bin_result)
+
+    # calculating expected result dependent on control qubit
     if initial_state[0]:
-        expected = [1] + initial_state[1+size:]+ initial_state[1:1+size]
+        expected = [1] + initial_state[1+size:] + initial_state[1:1+size]
     else:
         expected = expected = initial_state
 
     print(expected)
     for i in range(l):
+        # bin result is in reversed order
         assert expected[i] == bin_result[::-1][i]
 
 
