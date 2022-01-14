@@ -8,7 +8,8 @@ import math
 from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
 from src.quantum.gates.adder_gate import adder, adder_optimized, adder_reduced, parse_num
 from src.quantum.gates.modular_adder_gate import modular_adder
-from src.quantum.gates.controlled_multiplier_gate import swap_reg, controlled_multiplier_gate, c_swap_register
+from src.quantum.gates.controlled_multiplier_gate import controlled_multiplier_gate
+from src.quantum.gates.controlled_swap_gate import swap_reg, c_swap_register
 
 from quantuminspire.credentials import enable_account
 from qiskit.circuit.library import QFT
