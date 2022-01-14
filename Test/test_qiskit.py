@@ -178,7 +178,7 @@ def assert_controlled_multiplier(c1, b, x, a, N):
         if bin_b[i]:
             circuit.x(b_q[i])
 
-    c_mult_gate = controlled_multiplier_gate(size_x, size_b, a, N)
+    c_mult_gate = controlled_multiplier_gate(size_x, a, N)
 
     circuit.append(c_mult_gate.to_instruction(), [c_q[0]] + x_q[0:size_x] + b_q[0:size_b] + [c_mod_add[0]])
 

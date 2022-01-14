@@ -14,7 +14,7 @@ def c_U_a_gate(size, a, N):
     circuit = QuantumCircuit(c1, x, b, c2)
 
     # adding controlled multiplier gate
-    c_mult_a_gate = controlled_multiplier_gate(size, size, a, N).to_gate()
+    c_mult_a_gate = controlled_multiplier_gate(size, a, N).to_gate()
     circuit.append(c_mult_a_gate, range(2 * size + 2))
 
     # adding controlled swap register gate
@@ -22,7 +22,7 @@ def c_U_a_gate(size, a, N):
     circuit.append(c_swap_gate, range(2 * size + 1))
 
     # adding inverse controlled multiplier gate
-    c_mult_a_inverse_gate = controlled_multiplier_gate(size, size, modinv(a, N), N).inverse().to_gate()
+    c_mult_a_inverse_gate = controlled_multiplier_gate(size, modinv(a, N), N).inverse().to_gate()
     circuit.append(c_mult_a_inverse_gate, range(2 * size + 1))
 
     return circuit
