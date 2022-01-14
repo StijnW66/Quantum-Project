@@ -1,7 +1,7 @@
 from qiskit import QuantumRegister, QuantumCircuit
 
-from quantum.gates.controlled_multiplier_gate import controlled_multiplier_gate
-from quantum.gates.controlled_swap_gate import c_swap_register
+from src.quantum.gates.controlled_multiplier_gate import controlled_multiplier_gate
+from src.quantum.gates.controlled_swap_gate import c_swap_register
 
 
 def c_U_a_gate(size, a, N):
