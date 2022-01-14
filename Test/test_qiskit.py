@@ -6,7 +6,7 @@ sys.path.append(".")
 import pytest
 import math
 from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
-from src.quantum.gates.adder_gate import adder, adder_optimized, adder_reduced, parse_num
+from src.quantum.gates.adder_gate import adder_reduced, parse_num
 from src.quantum.gates.modular_adder_gate import modular_adder
 
 from quantuminspire.credentials import enable_account
@@ -67,77 +67,6 @@ def test_reduced():
     # this takes 20 minutes...
     #assert_add_nums_reduced(60108863, 108863)
 
-
-# Below are tests for up to 13 qubits added together
-
-def create_adder_circuit(num1, num2, size, optimize):
-    # create quantum circuit to hold value a.
-    q = QuantumRegister(int(size))
-    b = ClassicalRegister(size*2)
-    circuit = QuantumCircuit(q, b)
-
-    # create quantum circuit to hold value b. Which is then fourier transformed.
-    qftq = QuantumRegister(int(size))
-    qft = QuantumCircuit(qftq)
-
-    # convert the numbers to binary and set the corresponding bits to |1>
-    list_num1 = parse_num(num1, size)
-    list_num2 = parse_num(num2, size)[::-1]
-    for i in range(len(list_num1)):
-        if (list_num1[i]):
-            circuit.x(q[i])
-
-    for i in range(len(list_num2)):
-        if (list_num2[i]):
-            qft.x(qftq[i])
-
-    # Add quantum fourier transform to bottom qubits
-    qft.append(QFT(num_qubits=int(size), approximation_degree=0, do_swaps=True, inverse=False, insert_barriers=False, name='qft'), qftq)
-    circuit += qft
-
-    # Apply the adder to the circuit
-    if (optimize):
-        adder_optimized(circuit, num1)
-    else:
-        adder(circuit)
-
-    # Add inverse quantum fourier transform to bottom qubits
-    iqft = QuantumCircuit(qftq)
-    iqft.append(QFT(num_qubits=int(size), approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='iqft'), qftq)
-    circuit += iqft
-
-    return circuit
-
-def assert_add_nums(num1, num2, optimize):
-    # Calculate the sum to determine the amount of bits needed.
-    sum = num1+num2
-    size = len((bin(sum))) - 2 # subtract 2 since string starts with 0b
-
-    # Create the circuit.
-    circuit = create_adder_circuit(num1, num2, size, optimize)
-
-
-    # Execute circuit on quantuminspire and check if the correct  value is obtained.
-    qi_result = execute_circuit(circuit, 3)
-    counts_histogram = qi_result.get_counts(circuit)
-    bin_result = counts_histogram.most_frequent()[0:size]
-    result = int(bin_result, 2)
-    assert result == num1 + num2
-
-def test_adder():
-    # any sum should work as long as it takes half of maximum qubits.
-
-    assert_add_nums(11, 14, False)
-    assert_add_nums(110, 143, True)
-    assert_add_nums(99, 19, False)
-    assert_add_nums(194, 171, True)
-    assert_add_nums(1, 124, False)
-    assert_add_nums(0, 162, True)
-    assert_add_nums(82, 0, False)
-
-    # This test takes 8 minutes to run and 91 gates for normal adder,
-    # The optimized adder takes 6 minutes and 33 gates
-    # assert_add_nums(5254, 2083)
 
 def assert_modular_adder(num1, num2, N):
     size = len((bin(N))) - 1
