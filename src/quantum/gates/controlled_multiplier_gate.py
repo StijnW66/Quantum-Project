@@ -4,7 +4,8 @@ from qiskit.circuit.library import QFT, MCMT
 from src.quantum.gates.modular_adder_gate import modular_adder
 
 
-def controlled_multiplier_gate(x_size, b_size, a, N):
+def controlled_multiplier_gate(x_size, a, N):
+    b_size = len(bin(N).lstrip("0b"))
     # Although one additional controlling qubit 'c1' is specified for controlled
     # multiplier gate, the 'c2' qubit is to match qubit control of modular adder
     c1 = QuantumRegister(1, 'c')
