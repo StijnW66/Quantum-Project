@@ -1,4 +1,7 @@
-from qiskit import QuantumCircuit, QuantumRegister
+import sys
+sys.path.append(".")
+
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit.library import QFT, MCMT
 
 from src.quantum.gates.modular_adder_gate import modular_adder
@@ -35,3 +38,16 @@ def controlled_multiplier_gate(x_size, a, N):
 
     return cr
 
+def new_controlled_multiplier_gate(size, a, N):
+    c1 = QuantumRegister(1)
+    x = QuantumRegister(size)
+    b = QuantumRegister(size + 1) # add + 1 to account for overflow.
+    c2 = QuantumRegister(1)
+
+    circuit = QuantumCircuit(c1, x, b, c2)
+
+    circuit.append(QFT(num_qubits=size + 1, approximation_degree=0, do_swaps=True, inverse=False, insert_barriers=False, name='qft'), b)
+    for i in range(size):
+        circuit.append(modular_adder(2**i * a, N, size + 1), [c1[0], x[i]] + b[0:size+1] + [c2[0]])
+    circuit.append(QFT(num_qubits=size + 1, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='iqft'), b)
+    return circuit
