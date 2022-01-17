@@ -280,3 +280,5 @@ def test_c_U_a_gate():
     assert_c_U_a_gate(True, 7, 7, 30)
     assert_c_U_a_gate(False, 7, 13, 15)
     assert_c_U_a_gate(True, 9, 17, 77)
+    assert_c_U_a_gate(True, 9, 17, 76)
+    assert_c_U_a_gate(True, 9, 17, 20)
