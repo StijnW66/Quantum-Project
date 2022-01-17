@@ -3,6 +3,7 @@ import math
 
 # This is the most efficient adder which can add up to 26 bit numbers.
 def adder_reduced(num, size):
+    size += 1
     qubit_register = QuantumRegister(size)
     circuit = QuantumCircuit(qubit_register)
 
@@ -35,6 +36,7 @@ def parse_num(num, size):
     while (len(list_num) < size):
         list_num.insert(0, 0)
     return list_num
+
 
 def adder_optimized(circuit, num):
     qubit_register = circuit.qubits
