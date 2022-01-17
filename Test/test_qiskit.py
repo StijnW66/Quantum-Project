@@ -243,5 +243,6 @@ def test_new_controlled_multiplier_gate():
     assert_new_controlled_multiplier(4, 2, 4, 10)
     assert_new_controlled_multiplier(14, 11, 8, 121)
     assert_new_controlled_multiplier(4, 8, 30, 63)
+    assert_new_controlled_multiplier(9, 17, 0, 20)
     #assert_new_controlled_multiplier(36, 24, 132, 576)
 
