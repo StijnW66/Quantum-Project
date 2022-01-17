@@ -10,6 +10,7 @@ from src.quantum.gates.adder_gate import adder_reduced, parse_num
 from src.quantum.gates.modular_adder_gate import modular_adder
 from src.quantum.gates.controlled_multiplier_gate import controlled_multiplier_gate, new_controlled_multiplier_gate
 from src.quantum.gates.controlled_swap_gate import swap_reg, c_swap_register
+from src.quantum.gates.controlled_U_a_gate import c_U_a_gate
 
 from quantuminspire.credentials import enable_account
 from qiskit.circuit.library import QFT
@@ -240,8 +241,44 @@ def assert_new_controlled_multiplier(a, x, b, N):
 
 def test_new_controlled_multiplier_gate():
     #                               (a *x +b) %N
-    assert_new_controlled_multiplier(4, 2, 4, 10)
+    assert_new_controlled_multiplier(7, 7, 0, 30)
     assert_new_controlled_multiplier(14, 11, 8, 121)
     assert_new_controlled_multiplier(4, 8, 30, 63)
     #assert_new_controlled_multiplier(36, 24, 132, 576)
 
+def assert_c_U_a_gate(c, a, x, N):
+    size = len(bin(N)) - 2
+    q = QuantumRegister(2*size + 3)
+    br = ClassicalRegister(2*size + 3)
+
+    círcuit = QuantumCircuit(q, br)
+    U_a = c_U_a_gate(size, a, N)
+
+    # control qubit
+    if c: círcuit.x(q[0])
+
+
+    bin_x = parse_num(x, size)[::-1]
+    for i in range(len(bin_x)):
+        if bin_x[i]:
+            círcuit.x(q[i + 1])
+
+    círcuit.append(U_a, range(2*size + 3))
+    print(U_a.draw())
+    print(círcuit.draw())
+
+    qi_result = execute_circuit(círcuit, 1)
+
+    counts_histogram = qi_result.get_counts(círcuit)
+    bin_result = counts_histogram.most_frequent()[2 + size: 2*size + 2]
+    print(bin_result)
+    result = int(bin_result, 2)
+    if c: assert result == (a * x) % N
+    else: assert result == x
+
+def test_c_U_a_gate():
+    assert_c_U_a_gate(True, 7, 7, 30)
+    assert_c_U_a_gate(False, 7, 13, 15)
+    assert_c_U_a_gate(True, 9, 17, 77)
+    assert_c_U_a_gate(True, 9, 17, 76)
+    assert_c_U_a_gate(True, 9, 17, 20)
