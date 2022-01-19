@@ -22,7 +22,7 @@ def period_finding_routine(size, a, N):
 
     for i in range(2 * size):
         # Add U here
-        U_gate = c_U_a_gate(size, a, N)
+        U_gate = c_U_a_gate(size, a**2**i, N)
         circuit.append(U_gate, [control[2*size-1-i]] + q[0: 2 * size + 2])
 
     circuit.append(QFT(num_qubits=2*size, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='iqft'), control[0:2*size])
