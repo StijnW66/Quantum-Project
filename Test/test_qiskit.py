@@ -321,7 +321,8 @@ def assert_control_qubits(a, N):
     for r in rows:
         print(r)
 
-    assert 0 == -1
+    assert 0 == 0
 
 def test_control_qubits():
     assert_control_qubits(7,15)
+    assert_control_qubits(10,21)
