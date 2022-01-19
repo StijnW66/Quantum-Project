@@ -1,6 +1,10 @@
 # This file contains tests that will be run on github. These tests are also runnable locally using pytest
 
 import sys
+from fractions import Fraction
+
+from qiskit.visualization import plot_histogram
+
 sys.path.append(".")
 
 import pytest
@@ -11,6 +15,7 @@ from src.quantum.gates.modular_adder_gate import modular_adder
 from src.quantum.gates.controlled_multiplier_gate import controlled_multiplier_gate, new_controlled_multiplier_gate
 from src.quantum.gates.controlled_swap_gate import swap_reg, c_swap_register
 from src.quantum.gates.controlled_U_a_gate import c_U_a_gate
+from src.quantum.gates.non_optimised_period_finding import period_finding_routine
 
 from quantuminspire.credentials import enable_account
 from qiskit.circuit.library import QFT
@@ -283,3 +288,21 @@ def test_c_U_a_gate():
     assert_c_U_a_gate(True, 9, 17, 77)
     assert_c_U_a_gate(True, 9, 17, 76)
     assert_c_U_a_gate(True, 9, 17, 20)
+
+def check_period_finding_subroutine():
+    size = len(bin(15)) - 2
+    circuit = period_finding_routine(size, 2, 15)
+    qi_result = execute_circuit(circuit, 1)
+    print_results(qi_result, circuit)
+    print(circuit.draw())
+    counts_histogram = qi_result.get_counts(circuit)
+    # bin_result = counts_histogram.most_frequent()[0:2*size]
+    plot_histogram(counts_histogram)
+    # print(counts_histogram)
+    # print(bin_result)
+    # result = int(bin_result, 2)
+    # print(Fraction(result/2*size).limit_denominator(2*size))
+    # print(result)
+
+def test_check_period_finding_subroutine():
+    check_period_finding_subroutine()
