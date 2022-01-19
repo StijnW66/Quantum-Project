@@ -14,7 +14,7 @@ def adder_reduced(num, size):
     circuit = QuantumCircuit(qubit_register)
 
     list_num = parse_num(num, size)
-    print(list_num)
+    #print(list_num)
 
     for i in range(size):
         angle_sum = 0
