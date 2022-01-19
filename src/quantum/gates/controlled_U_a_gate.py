@@ -18,7 +18,6 @@ def c_U_a_gate(size, a, N):
     c_mult_a_gate = new_controlled_multiplier_gate(size, a, N)
     circuit.append(c_mult_a_gate, range(2 * size + 3))
 
-    #return circuit
     # adding controlled swap register gate
     c_swap_gate = c_swap_register(size)
     circuit.append(c_swap_gate, range(2 * size + 1))
@@ -46,4 +45,3 @@ def modinv(a, m):
         raise Exception('modular inverse does not exist')
     else:
         return x % m
-#print(c_U_a_gate(6,7,15))

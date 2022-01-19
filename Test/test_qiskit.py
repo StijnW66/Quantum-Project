@@ -302,30 +302,38 @@ def assert_control_qubits(a, N):
 
     circuit.append(control_qubits(size, a, N), c[:] + q[:])
     circuit.measure(range(2*size), range(2*size))
-    print(circuit)
+    #print(circuit)
 
-    qi_result = execute_circuit(circuit, 1024)
+    qi_result = execute_circuit(circuit, 32)
     print(qi_result)
 
     counts = qi_result.get_counts(circuit)
 
     n_count = 2*size
     rows, measured_phases = [], []
+
     for output in counts:
-        decimal = int(output, 2)  # Convert (base 2) string to decimal
+
+        decimal = int(output[::-1], 2)  # Convert (base 2) string to decimal
         phase = decimal / (2 ** n_count)  # Find corresponding eigenvalue
         measured_phases.append(phase)
         # Add these values to the rows in our table:
         rows.append([f"{output}(bin) = {decimal:>3}(dec)",
-                     f"{decimal}/{2 ** n_count} = {phase:.2f}"])
+                     f"{decimal}/{2 ** n_count} = {phase:.2f}", counts[output], Fraction(phase).limit_denominator(N)])
     # Print the rows in a table
+    #sort by count
+    def number(r):
+        return r[2]
+    rows.sort(reverse=True, key=number)
+    rows = rows[0:10]
     for r in rows:
         print(r)
 
-    assert 0 == -1
+    assert 0 == 0
 
 def test_control_qubits():
     assert_control_qubits(7,15)
+    assert_control_qubits(10,21)
 
 def check_period_finding_subroutine():
     size = len(bin(15)) - 2

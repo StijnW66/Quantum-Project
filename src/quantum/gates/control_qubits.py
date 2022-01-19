@@ -20,7 +20,7 @@ def control_qubits(size, a, N):
         circuit.h(control[i])
 
     # preparing controlled qubits to state 1
-    circuit.h(q[0])
+    circuit.x(q[0])
 
     # applying the U_a gates
     for i in range(2*size):
