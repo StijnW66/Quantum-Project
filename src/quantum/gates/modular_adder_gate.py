@@ -10,7 +10,10 @@ from src.quantum.gates.adder_gate import adder_reduced
 
 
 def modular_adder(a, N, size):
-
+    # make sure a < N
+    #print(a,N)
+    a -= (a//N)*N
+    #print(a,N)
     # Create circuit
     qubit_register = QuantumRegister(size + 3)
     circuit = QuantumCircuit(qubit_register)
