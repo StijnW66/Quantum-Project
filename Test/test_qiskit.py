@@ -11,6 +11,7 @@ from src.quantum.gates.modular_adder_gate import modular_adder
 from src.quantum.gates.controlled_multiplier_gate import controlled_multiplier_gate, new_controlled_multiplier_gate
 from src.quantum.gates.controlled_swap_gate import swap_reg, c_swap_register
 from src.quantum.gates.controlled_U_a_gate import c_U_a_gate
+from src.quantum.gates.control_qubits import control_qubits
 
 from quantuminspire.credentials import enable_account
 from qiskit.circuit.library import QFT
@@ -19,7 +20,7 @@ from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
 # This method runs once before all tests in this file and sets up the quantuminspire interface.
 @pytest.fixture(scope='module', autouse=True)
 def setup_QI_before_tests():
-    enable_account("2a9f882ef038dcca14b930a393e332eae78ce915")
+    enable_account("f09ca950f54ad514f8de09466aff2dc49cee34a5")
     setup_QI("Tests")
 
 
@@ -98,12 +99,12 @@ def assert_modular_adder(num1, num2, N):
     bin_result = counts_histogram.most_frequent()[0 : size + 1]
     print(bin_result)
     result = int(bin_result, 2)
-    expected = (num1+num2) if (num1 + num2) < N else (num1 + num2 - N)
+    expected = (num1+num2)%N
     assert result == expected
 
 def test_modular_adder():
-    assert_modular_adder(19, 6, 15)
-    assert_modular_adder(10, 10, 17)
+    assert_modular_adder(194, 6, 15)
+    assert_modular_adder(199, 10, 17)
     assert_modular_adder(1023, 782, 1000)
     # assert_modular_adder(808763, 1312, 604921)
 
@@ -277,6 +278,43 @@ def assert_c_U_a_gate(c, a, x, N):
     else: assert result == x
 
 def test_c_U_a_gate():
-    assert_c_U_a_gate(True, 7, 7, 30)
+    assert_c_U_a_gate(True, 7, 7, 15)
     assert_c_U_a_gate(False, 7, 13, 15)
     assert_c_U_a_gate(True, 9, 17, 77)
+
+
+
+def assert_control_qubits(a, N):
+    size = len(bin(N)) - 2
+
+    c = QuantumRegister(2*size)
+    q = QuantumRegister(2*size+2)
+    clas = ClassicalRegister(2*size)
+    circuit = QuantumCircuit(c, q, clas)
+
+    circuit.append(control_qubits(size, a, N), c[:] + q[:])
+    circuit.measure(range(2*size), range(2*size))
+    print(circuit)
+
+    qi_result = execute_circuit(circuit, 1024)
+    print(qi_result)
+
+    counts = qi_result.get_counts(circuit)
+
+    n_count = 2*size
+    rows, measured_phases = [], []
+    for output in counts:
+        decimal = int(output, 2)  # Convert (base 2) string to decimal
+        phase = decimal / (2 ** n_count)  # Find corresponding eigenvalue
+        measured_phases.append(phase)
+        # Add these values to the rows in our table:
+        rows.append([f"{output}(bin) = {decimal:>3}(dec)",
+                     f"{decimal}/{2 ** n_count} = {phase:.2f}"])
+    # Print the rows in a table
+    for r in rows:
+        print(r)
+
+    assert 0 == -1
+
+def test_control_qubits():
+    assert_control_qubits(7,15)
