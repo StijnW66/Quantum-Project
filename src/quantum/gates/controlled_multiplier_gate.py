@@ -48,7 +48,7 @@ def new_controlled_multiplier_gate(size, a, N):
 
     circuit.append(QFT(num_qubits=size + 1, approximation_degree=0, do_swaps=True, inverse=False, insert_barriers=False, name='qft'), b)
     for i in range(size):
-        circuit.append(modular_adder(2**i * a, N, size + 1), [c1[0], x[i]] + b[0:size+1] + [c2[0]])
+        circuit.append(modular_adder((2**i * a) % N, N, size + 1), [c1[0], x[i]] + b[0:size+1] + [c2[0]])
     circuit.append(QFT(num_qubits=size + 1, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='iqft'), b)
     return circuit
 
