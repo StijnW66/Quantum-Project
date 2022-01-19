@@ -1,5 +1,6 @@
 from qiskit import QuantumRegister, QuantumCircuit
 
+
 from src.quantum.gates.controlled_multiplier_gate import controlled_multiplier_gate, new_controlled_multiplier_gate
 from src.quantum.gates.controlled_swap_gate import c_swap_register
 

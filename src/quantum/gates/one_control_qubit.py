@@ -1,39 +1,46 @@
 import sys
 sys.path.append('.')
 
+from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
+
+
 from src.quantum.gates.controlled_U_a_gate import c_U_a_gate
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
 
 def one_control_qubit(size, a, N):
     control = QuantumRegister(1)
-    q = QuantumRegister(size)
+    q = QuantumRegister(2*size + 2)
     b = ClassicalRegister(2*size)
 
     circuit = QuantumCircuit(control, q, b)
+
+    for i in range(2*size):
+        circuit.x(q[i])
 
 
     for i in range(2*size):
         circuit.h(control[0])
 
-        # Add U here
-        U_gate = mock_Circuit(size)
-        gate = U_gate.to_gate().control(1)
-        circuit.append(c_U_a_gate(size, a, N), range(size+1))
+        circuit.append(c_U_a_gate(size, a**2**i, N), range(2*size+3))
 
         for j in range(i):
             circuit.p(-((2*3.14)/2**(j+2)), control[0]).c_if(b[j], 1)
 
         circuit.h(control[0])
-        circuit.measure(control[0], b[i])
+        circuit.swap(control[0], q[i])
+        circuit.measure(q[i], b[i])
+        circuit.swap(control[0], q[i])
         circuit.x(control[0]).c_if(b[i], 1)
 
     return circuit
 
-def mock_Circuit(size):
-    q = QuantumRegister(size)
-    circuit = QuantumCircuit(q)
-    return circuit
 
-circuit = one_control_qubit(2, 4, 15)
+circuit = one_control_qubit(6, 4, 63)
 print(circuit.draw())
+
+setup_QI('tests')
+
+print_results(execute_circuit(circuit, 50), circuit)
+
+
 
