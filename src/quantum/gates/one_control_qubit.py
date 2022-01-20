@@ -1,30 +1,37 @@
 import sys
+import numpy as np
+
 sys.path.append('.')
 
 from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
-
-
 from src.quantum.gates.controlled_U_a_gate import c_U_a_gate
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
+from math import pi
+from qiskit.circuit.library import PhaseGate
 
-def one_control_qubit(size, a, N):
+def a2jmodN(a, j, N):
+    """Compute a^{2^j} (mod N) by repeated squaring"""
+    for i in range(j):
+        a = np.mod(a**2, N)
+    return a
+
+
+def changed_one_control_qubit(size, a, N):
     control = QuantumRegister(1)
-    q = QuantumRegister(2*size + 2)
-    b = ClassicalRegister(2*size)
+    q = QuantumRegister(2 * size + 2)
+    b = ClassicalRegister(2 * size)
 
     circuit = QuantumCircuit(control, q, b)
 
-    for i in range(2*size):
-        circuit.x(q[i])
+    circuit.x(q[0])
 
-
-    for i in range(2*size):
+    for i in range(2 * size):
         circuit.h(control[0])
 
-        circuit.append(c_U_a_gate(size, a**2**i, N), range(2*size+3))
+        circuit.append(c_U_a_gate(size, a2jmodN(a, i, N), N), range(2 * size + 3))
 
         for j in range(i):
-            circuit.p(-((2*3.14)/2**(j+2)), control[0]).c_if(b[j], 1)
+            circuit.append(PhaseGate(((-pi) / 2 ** (i - j))).c_if(b[j], 1), [control[0]])
 
         circuit.h(control[0])
         circuit.swap(control[0], q[i])
@@ -34,13 +41,32 @@ def one_control_qubit(size, a, N):
 
     return circuit
 
+def classic_one_control_qubit(size, a, N):
+    control = QuantumRegister(1)
+    q = QuantumRegister(2 * size + 2)
+    b = ClassicalRegister(2 * size)
 
-circuit = one_control_qubit(6, 4, 63)
+    circuit = QuantumCircuit(control, q, b)
+
+    circuit.x(q[0])
+
+    for i in range(2 * size):
+        circuit.h(control[0])
+
+        circuit.append(c_U_a_gate(size, a2jmodN(a, i, N), N), range(2 * size + 3))
+
+        for j in range(i):
+            circuit.append(PhaseGate(((-pi) / 2 ** (i - j))).c_if(b[j], 1), [control[0]])
+
+        circuit.h(control[0])
+        circuit.measure(control[0], b[i])
+        circuit.x(control[0]).c_if(b[i], 1)
+
+    return circuit
+
+
+N = 15
+a = 2
+circuit = classic_one_control_qubit(len(bin(N).lstrip("0b")), a, N)
 print(circuit.draw())
-
-setup_QI('tests')
-
-print_results(execute_circuit(circuit, 50), circuit)
-
-
 
