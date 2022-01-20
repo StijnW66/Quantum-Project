@@ -42,8 +42,3 @@ def print_results(qi_result, circuit):
     probabilities_histogram = qi_result.get_probabilities(circuit)
     print('\nState\tProbabilities')
     [print('{0}\t\t{1}'.format(state, val)) for state, val in probabilities_histogram.items()]
-
-
-
-    counts = results.get_counts()
-    plot_histogram(counts)
