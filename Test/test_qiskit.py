@@ -136,7 +136,7 @@ def assert_controlled_swap(initial_state):
 
     qi_result = execute_circuit(circuit, 1)
     counts_histogram = qi_result.get_counts(circuit)
-    bin_result = [int(i) for i in str(counts_histogram.most_frequent())]
+    bin_result = [int(i) for i in str(counts_histogram.most_frequent()[0:2*size + 1])]
     print(bin_result)
 
     # calculating expected result dependent on control qubit
