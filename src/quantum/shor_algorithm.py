@@ -27,20 +27,23 @@ def find_period(a, N):
 
     circuit.append(control_qubits(size, a, N), c[:] + q[:])
     circuit.measure(range(2*size), range(2*size))
+    global qi_backend
     for i in range(100):
+        if qi_backend is None:
+            qi_backend = setup_QI_for_shor()
         print("trying to find r. iteration:", i)
-        qi_result = execute_circuit(circuit, 1)
+        qi_result = execute_circuit(circuit, 2)
 
         counts_histogram = qi_result.get_counts(circuit)
-        bin_result = counts_histogram.most_frequent()[2 + size: 2 * size + 2]
-        decimal = int(bin_result[::-1], 2)
-        phase = decimal / (2**(2*size))
-        f = Fraction(phase).limit_denominator(N)
-        r = f.denominator
-        print(decimal, phase, r)
-        if r > 2:
-            if (a**r)%N == 1:
-                return r
+        for bin_result in counts_histogram:
+            decimal = int(bin_result[::-1], 2)
+            phase = decimal / (2**(2*size))
+            f = Fraction(phase).limit_denominator(N)
+            r = f.denominator
+            print(decimal, phase, r)
+            if r > 1:
+                if (a**r)%N == 1:
+                    return r
     #too many tries
     return 1
 
@@ -77,7 +80,7 @@ def shor_algorithm(N):
     if r % 2 == 1:
         shor_algorithm(N)
 
-    x = (a ** (r / 2)) % N
+    x = (a ** (r // 2)) % N
 
     # Check if x + 1 is not multiple of N (as then gcd(x + 1, N) = N, which is not solving the problem)
     if (x + 1) % N == 0:
