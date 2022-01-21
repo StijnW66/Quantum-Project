@@ -17,7 +17,7 @@ from qiskit.circuit.library import QFT
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
 
 # This method runs once before all tests in this file and sets up the quantuminspire interface.
-@pytest.fixture(scope='module', autouse=True)
+#@pytest.fixture(scope='module', autouse=True)
 def setup_QI_before_tests():
     enable_account("2a9f882ef038dcca14b930a393e332eae78ce915")
     setup_QI("Tests")
@@ -47,6 +47,7 @@ def assert_add_nums_reduced(num1, num2):
 
     circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='iqft'), q)
 
+    circuit.measure_all()
     print(circuit.draw())
 
     # Execute circuit on quantuminspire and check if the correct  value is obtained.
@@ -87,15 +88,18 @@ def assert_modular_adder(num1, num2, N):
             circuit.x(q[i + 2])
 
     circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=False, insert_barriers=False, name='qft'), range(2, size + 2))
-    mod_adder = modular_adder(num1, N, size)
+    mod_adder = modular_adder(num1 % N, N, size)
     circuit.append(mod_adder, range(0, size+3))
     circuit.append(QFT(num_qubits=size, approximation_degree=0, do_swaps=True, inverse=True, insert_barriers=False, name='iqft'), range(2, size + 2))
+
+    circuit.measure_all()
 
     print(circuit.draw())
 
     qi_result = execute_circuit(circuit, 1)
     counts_histogram = qi_result.get_counts(circuit)
     bin_result = counts_histogram.most_frequent()[0 : size + 1]
+    bin_result = bin_result
     print(bin_result)
     result = int(bin_result, 2)
     expected = (num1+num2) if (num1 + num2) < N else (num1 + num2 - N)
@@ -126,11 +130,13 @@ def assert_controlled_swap(initial_state):
             circuit.x(q)
     circuit.append(c_swap_register(size), range(l))
 
+    circuit.measure_all()
+
     print(circuit.draw())
 
     qi_result = execute_circuit(circuit, 1)
     counts_histogram = qi_result.get_counts(circuit)
-    bin_result = [int(i) for i in str(counts_histogram.most_frequent())]
+    bin_result = [int(i) for i in str(counts_histogram.most_frequent()[0:2*size + 1])]
     print(bin_result)
 
     # calculating expected result dependent on control qubit
@@ -183,6 +189,8 @@ def assert_controlled_multiplier(c1, b, x, a, N):
 
     circuit.append(c_mult_gate.to_instruction(), [c_q[0]] + x_q[0:size_x] + b_q[0:size_b] + [c_mod_add[0]])
 
+    circuit.measure_all()
+
     qi_result = execute_circuit(circuit, 1)
 
     counts_histogram = qi_result.get_counts(circuit)
@@ -230,6 +238,7 @@ def assert_new_controlled_multiplier(a, x, b, N):
     print(cm.draw())
     print(c.draw())
 
+    c.measure_all()
     qi_result = execute_circuit(c, 1)
 
     counts_histogram = qi_result.get_counts(c)
@@ -251,25 +260,27 @@ def assert_c_U_a_gate(c, a, x, N):
     q = QuantumRegister(2*size + 3)
     br = ClassicalRegister(2*size + 3)
 
-    círcuit = QuantumCircuit(q, br)
+    circuit = QuantumCircuit(q, br)
     U_a = c_U_a_gate(size, a, N)
 
     # control qubit
-    if c: círcuit.x(q[0])
+    if c: circuit.x(q[0])
 
 
     bin_x = parse_num(x, size)[::-1]
     for i in range(len(bin_x)):
         if bin_x[i]:
-            círcuit.x(q[i + 1])
+            circuit.x(q[i + 1])
 
-    círcuit.append(U_a, range(2*size + 3))
+    circuit.append(U_a, range(2*size + 3))
     print(U_a.draw())
-    print(círcuit.draw())
+    circuit.measure_all()
 
-    qi_result = execute_circuit(círcuit, 1)
+    print(circuit.draw())
 
-    counts_histogram = qi_result.get_counts(círcuit)
+    qi_result = execute_circuit(circuit, 1)
+
+    counts_histogram = qi_result.get_counts(circuit)
     bin_result = counts_histogram.most_frequent()[2 + size: 2*size + 2]
     print(bin_result)
     result = int(bin_result, 2)
