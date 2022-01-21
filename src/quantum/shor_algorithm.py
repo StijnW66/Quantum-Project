@@ -47,7 +47,7 @@ def shor_algorithm(N):
     # Draw random integer 'a' such that:  1 < a < N
     a = np.random.randint(2, N)
     while a in chosen_numbers:
-        a = np.random.randint(2, N - 1)
+        a = np.random.randint(2, N)
     chosen_numbers.add(a)
     print("\tChosen a: " + str(a))
     K = gcd(a, N)
@@ -81,3 +81,5 @@ def shor_algorithm(N):
 
     # Else return factors of N
     return gcd(x + 1, N), gcd(x - 1, N)
+
+shor_algorithm(5)
