@@ -2,3 +2,4 @@ quantuminspire==1.6.0
 qiskit==0.34.0
 projectq==0.7.0
 pytest==6.2.5
+numpy~=1.21.5
