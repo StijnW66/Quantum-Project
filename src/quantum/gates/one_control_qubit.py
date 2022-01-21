@@ -3,7 +3,6 @@ import numpy as np
 
 sys.path.append('.')
 
-from src.quantum.qi_runner import setup_QI, execute_circuit, print_results
 from src.quantum.gates.controlled_U_a_gate import c_U_a_gate
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from math import pi
@@ -64,9 +63,4 @@ def classic_one_control_qubit(size, a, N):
 
     return circuit
 
-
-N = 15
-a = 2
-circuit = classic_one_control_qubit(len(bin(N).lstrip("0b")), a, N)
-print(circuit.draw())
 
