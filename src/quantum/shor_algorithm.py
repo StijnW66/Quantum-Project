@@ -26,6 +26,18 @@ def shor_algorithm(N):
         print(f"\tThe given number {N} is a prime. Terminating the algorithm.\n")
         return 1, N
 
+    # Check if N = p^q
+    if shor_attempt_number == 1:
+        for i in range(2, int(np.sqrt(N)) + 1, 1):
+            power = 0
+            temp = 1
+            while temp < N:
+                temp = temp * i
+                power += 1
+            if temp == N:
+                print(f"\tThe given number {N} can be expressed as {i}^{power}. Terminating the algorithm.\n")
+                return i, int(N / i)
+
     # Check if based on past attempts number is prime. Preventing infinite run
     if len(chosen_numbers) >= N - 2:
         print(f"\t Based on past attempts, it seems that given number {N} is prime. Terminating the algorithm.\n")
@@ -68,3 +80,7 @@ def shor_algorithm(N):
 
     # Else return factors of N
     return gcd(x + 1, N), gcd(x - 1, N)
+
+
+factors = shor_algorithm(15)
+print(f"Found factors: {factors}")
