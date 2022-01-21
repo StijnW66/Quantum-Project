@@ -2,6 +2,8 @@ import os
 from quantuminspire.credentials import get_authentication
 from quantuminspire.qiskit import QI
 from qiskit import execute
+from qiskit import QuantumCircuit, Aer, transpile, assemble
+
 
 
 qi_backend = None
@@ -17,7 +19,13 @@ def setup_QI(project_name="Shor's algorithm", backend_name='QX single-node simul
 # Method that executes a given circuit.
 def execute_circuit(circuit, shots=256):
     if qi_backend is None:
-        raise Exception("quantuminspire is not setup")
+        print('Running on local AER simulator')
+        aer_sim = Aer.get_backend('aer_simulator')
+        t_qc = transpile(circuit, aer_sim)
+        #qobj = assemble(t_qc)
+        results = aer_sim.run(t_qc).result()
+        print(results)
+        return results
 
     qi_job = execute(circuit, backend=qi_backend, shots=shots)
     qi_result = qi_job.result()
