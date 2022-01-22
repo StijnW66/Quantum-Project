@@ -15,7 +15,6 @@ from src.quantum.gates.modular_adder_gate import modular_adder
 from src.quantum.gates.controlled_multiplier_gate import controlled_multiplier_gate, new_controlled_multiplier_gate
 from src.quantum.gates.controlled_swap_gate import swap_reg, c_swap_register
 from src.quantum.gates.controlled_U_a_gate import c_U_a_gate
-from src.quantum.gates.non_optimised_period_finding import period_finding_routine
 from src.quantum.gates.control_qubits import control_qubits
 
 from quantuminspire.credentials import enable_account
