@@ -24,6 +24,8 @@ def shor_algorithm(N):
     # Small number check
     if N <= 3:
         print(f"\tThe given number {N} is a prime. Terminating the algorithm.\n")
+        shor_attempt_number = 0
+        chosen_numbers = set()
         return 1, N
 
     # Check if N = p^q
@@ -36,11 +38,15 @@ def shor_algorithm(N):
                 power += 1
             if temp == N:
                 print(f"\tThe given number {N} can be expressed as {i}^{power}. Terminating the algorithm.\n")
+                shor_attempt_number = 0
+                chosen_numbers = set()
                 return i, int(N / i)
 
     # Check if based on past attempts number is prime. Preventing infinite run
     if len(chosen_numbers) >= N - 2:
         print(f"\t Based on past attempts, it seems that given number {N} is prime. Terminating the algorithm.\n")
+        shor_attempt_number = 0
+        chosen_numbers = set()
         return 1, N
 
     # Draw random integer 'a' such that:  1 < a < N
@@ -54,6 +60,8 @@ def shor_algorithm(N):
     # Check for trivial solution
     if K != 1:
         print("\tFound trivial solution as randomly chosen 'a' shares divisor with 'N'")
+        shor_attempt_number = 0
+        chosen_numbers = set()
         return K, int(N / K)
 
     # Quantum Subroutine: Find Period of f(x) = a ** x mod N == 1
@@ -77,8 +85,13 @@ def shor_algorithm(N):
     if (x + 1) % N == 0:
         print(f"\t{a}^({int(r / 2)}) mod {N} == -1, repeating the algorithm.\n")
         return shor_algorithm(N)
+    else:
+        print("\n")
 
-    # Else return factors of N
+    # Reset global variables & return factors of N
+    shor_attempt_number = 0
+    chosen_numbers = set()
+
     factor1 = gcd(x + 1, N)
     factor2 = gcd(x - 1, N)
     if factor1 != 1:
