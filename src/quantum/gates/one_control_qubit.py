@@ -1,18 +1,13 @@
 import sys
-import numpy as np
 
-sys.path.append('.')
-
+from src.quantum.util.helpers import a2jmodN
 from src.quantum.gates.controlled_U_a_gate import c_U_a_gate
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from math import pi
 from qiskit.circuit.library import PhaseGate
 
-def a2jmodN(a, j, N):
-    """Compute a^{2^j} (mod N) by repeated squaring"""
-    for i in range(j):
-        a = np.mod(a**2, N)
-    return a
+sys.path.append('.')
+
 
 
 def changed_one_control_qubit(size, a, N):
