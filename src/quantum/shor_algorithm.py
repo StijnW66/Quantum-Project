@@ -80,6 +80,11 @@ def shor_algorithm(N):
         return shor_algorithm(N)
 
     # Else return factors of N
-    return gcd(x + 1, N), gcd(x - 1, N)
+    factor1 = gcd(x + 1, N)
+    factor2 = gcd(x - 1, N)
+    if factor1 != 1:
+        return factor1, int(N / factor1)
+    else:
+        return factor2, int(N / factor2)
 
 shor_algorithm(5)
