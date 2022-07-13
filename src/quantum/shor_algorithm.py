@@ -1,10 +1,11 @@
 import numpy as np
 import sys
 
-from quantum.period_finding_subroutine.period_finding_subroutine import find_period_2n_plus_3
+sys.path.append(".")
+
+from src.quantum.period_finding_subroutine.period_finding_subroutine import find_period_2n_plus_3
 from math import gcd
 
-sys.path.append(".")
 
 shor_attempt_number = 0
 chosen_numbers = set()
@@ -98,3 +99,5 @@ def shor_algorithm(N):
         return factor1, int(N / factor1)
     else:
         return factor2, int(N / factor2)
+
+print(shor_algorithm(15))

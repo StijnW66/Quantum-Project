@@ -1,14 +1,14 @@
 import sys
+sys.path.append(".")
 
 from fractions import Fraction
 
 from qiskit import transpile, assemble, Aer, QuantumRegister, ClassicalRegister, QuantumCircuit
 
-from quantum.gates.control_qubits import control_qubits
-from quantum.gates.one_control_qubit import classic_one_control_qubit
-from quantum.qi_runner import execute_circuit
+from src.quantum.gates.control_qubits import control_qubits
+from src.quantum.gates.one_control_qubit import classic_one_control_qubit
+from src.quantum.qi_runner import execute_circuit
 
-sys.path.append(".")
 
 
 experiment_number_of_shots = 1024
