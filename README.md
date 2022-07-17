@@ -8,7 +8,7 @@ The [Qiskit](https://qiskit.org/) sdk is used to build the Quantum Circuit and [
 ## File structure
 [./src/quantum/gates](./src/quantum/gates) defines the gates (building blocks) of the circuit such as the [Adder](./src/quantum/gates/adder_gate.py), [Modular Adder](./src/quantum/gates/modular_adder_gate.py), [Controlled Multiplier](./src/quantum/gates/controlled_multiplier_gate.py), [Controlled Swap](./src/quantum/gates/controlled_swap_gate.py). Which are used to finally construct the [Controlled U Gate](./src/quantum/gates/controlled_U_a_gate.py).
 
-With the Controlled U Gate the Quantum Phase Estimation circuit can be built: [./src/quantum/gates/control_qubits.py](./src/quantum/gates/control_qubits.py) contains the code for this circuit wiht 2n control qubits and [./src/quantum/gates/one_control_qubit.py](./src/quantum/gates/one_control_qubit.py) contains the code using the "single control qubit trick".
+With the Controlled U Gate the Quantum Phase Estimation circuit can be built: [control_qubits.py](./src/quantum/gates/control_qubits.py) contains the code for this circuit wiht 2n control qubits and [one_control_qubit.py](./src/quantum/gates/one_control_qubit.py) contains the code using the "single control qubit trick".
 
 Finally some postprocessing is performed in [./src/quantum/shor_algorithm.py](./src/quantum/shor_algorithm.py) to succesfully factorize a number into its prime factors.
 
