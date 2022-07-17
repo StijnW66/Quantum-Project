@@ -10,7 +10,7 @@ The [Qiskit](https://qiskit.org/) sdk is used to build the Quantum Circuit and [
 
 With the Controlled U Gate the Quantum Phase Estimation circuit can be built: [control_qubits.py](./src/quantum/gates/control_qubits.py) contains the code for this circuit with 2n control qubits and [one_control_qubit.py](./src/quantum/gates/one_control_qubit.py) contains the code using the "single control qubit trick".
 
-Finally some postprocessing is performed in [./src/quantum/shor_algorithm.py](./src/quantum/shor_algorithm.py) to succesfully factorize a number into its prime factors.
+Finally some postprocessing is performed in [shor_algorithm.py](./src/quantum/shor_algorithm.py) to succesfully factorize a number into its prime factors.
 
 ## Contributors:
 - Stijn van de Water
